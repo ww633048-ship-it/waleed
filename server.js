@@ -6,6 +6,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ========== الإعدادات ==========
+const ADMIN_TOKEN = "waleed2026kvn"; // غيّره لأي توكن قوي
+
 app.use(cors());
 app.use(express.json());
 
@@ -20,6 +23,17 @@ function writeScripts(data) { fs.writeFileSync(SCRIPTS_FILE, JSON.stringify(data
 function readKeys() { return JSON.parse(fs.readFileSync(KEYS_FILE, 'utf8')); }
 function writeKeys(data) { fs.writeFileSync(KEYS_FILE, JSON.stringify(data, null, 2)); }
 
+// ========== Middleware للتحقق من التوكن ==========
+function checkAuth(req, res, next) {
+    const auth = req.headers.authorization;
+    if (auth && auth === `Bearer ${ADMIN_TOKEN}`) {
+        next();
+    } else {
+        res.status(403).json({ error: 'غير مصرح' });
+    }
+}
+
+// ========== Routes العامة (بدون توثيق) ==========
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -35,11 +49,18 @@ app.get('/load/:id.lua', (req, res) => {
     }
 });
 
-app.post('/api/list', (req, res) => {
+app.get('/api/script-status/:id', (req, res) => {
+    const scripts = readScripts();
+    const id = req.params.id;
+    res.json({ active: scripts[id]?.active || false });
+});
+
+// ========== Routes المحمية (أدمن فقط) ==========
+app.post('/api/list', checkAuth, (req, res) => {
     res.json(readScripts());
 });
 
-app.post('/api/upload', (req, res) => {
+app.post('/api/upload', checkAuth, (req, res) => {
     const { id, source, type } = req.body;
     if (!id || !source) return res.json({ success: false });
     const scripts = readScripts();
@@ -48,14 +69,14 @@ app.post('/api/upload', (req, res) => {
     res.json({ success: true });
 });
 
-app.post('/api/get-script-source', (req, res) => {
+app.post('/api/get-script-source', checkAuth, (req, res) => {
     const scripts = readScripts();
     const { id } = req.body;
     if (scripts[id]) res.json({ success: true, source: scripts[id].source });
     else res.json({ success: false });
 });
 
-app.post('/api/toggle', (req, res) => {
+app.post('/api/toggle', checkAuth, (req, res) => {
     const { id, active } = req.body;
     const scripts = readScripts();
     if (scripts[id]) {
@@ -65,7 +86,7 @@ app.post('/api/toggle', (req, res) => {
     } else res.json({ success: false });
 });
 
-app.post('/api/delete-script', (req, res) => {
+app.post('/api/delete-script', checkAuth, (req, res) => {
     const { id } = req.body;
     const scripts = readScripts();
     if (scripts[id]) {
@@ -77,13 +98,7 @@ app.post('/api/delete-script', (req, res) => {
     } else res.json({ success: false });
 });
 
-app.get('/api/script-status/:id', (req, res) => {
-    const scripts = readScripts();
-    const id = req.params.id;
-    res.json({ active: scripts[id]?.active || false });
-});
-
-app.post('/api/keys/list', (req, res) => {
+app.post('/api/keys/list', checkAuth, (req, res) => {
     const keys = readKeys();
     const now = new Date();
     const result = keys.map(k => ({
@@ -93,7 +108,7 @@ app.post('/api/keys/list', (req, res) => {
     res.json(result);
 });
 
-app.post('/api/keys/generate', (req, res) => {
+app.post('/api/keys/generate', checkAuth, (req, res) => {
     const { scriptId, duration } = req.body;
     if (!scriptId) return res.json({ success: false });
     const key = 'KEY-' + Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -118,7 +133,7 @@ app.post('/api/keys/generate', (req, res) => {
     res.json({ success: true, key, expiryDate });
 });
 
-app.post('/api/keys/update-duration', (req, res) => {
+app.post('/api/keys/update-duration', checkAuth, (req, res) => {
     const { key, duration } = req.body;
     const keys = readKeys();
     const index = keys.findIndex(k => k.key === key);
@@ -129,7 +144,7 @@ app.post('/api/keys/update-duration', (req, res) => {
     } else res.json({ success: false });
 });
 
-app.post('/api/keys/reset', (req, res) => {
+app.post('/api/keys/reset', checkAuth, (req, res) => {
     const { key } = req.body;
     const keys = readKeys();
     const index = keys.findIndex(k => k.key === key);
@@ -140,7 +155,7 @@ app.post('/api/keys/reset', (req, res) => {
     } else res.json({ success: false });
 });
 
-app.post('/api/keys/delete', (req, res) => {
+app.post('/api/keys/delete', checkAuth, (req, res) => {
     const { key } = req.body;
     let keys = readKeys().filter(k => k.key !== key);
     writeKeys(keys);
