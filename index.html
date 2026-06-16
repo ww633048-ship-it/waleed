@@ -17,16 +17,11 @@
             border: 1px solid #ec4899;
             box-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
         }
-        .glow-pink {
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
-        }
         .btn-pink {
             background: linear-gradient(135deg, #ec4899, #be185d);
             transition: all 0.3s;
         }
-        .btn-pink:hover {
-            background: linear-gradient(135deg, #f472b6, #db2777);
-        }
+        .btn-pink:hover { background: linear-gradient(135deg, #f472b6, #db2777); }
         .card {
             background: #2d0a1e;
             border: 1px solid #be185d;
@@ -46,26 +41,13 @@
             border-color: #f472b6;
             box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
         }
-        .key-row {
-            border-bottom: 1px solid rgba(236, 72, 153, 0.3);
-        }
-        .expired {
-            background: rgba(220, 38, 38, 0.2);
-            border-right: 3px solid #ef4444;
-        }
-        .active-key {
-            background: rgba(236, 72, 153, 0.15);
-            border-right: 3px solid #ec4899;
-        }
+        .key-row { border-bottom: 1px solid rgba(236, 72, 153, 0.3); }
+        .expired { background: rgba(220, 38, 38, 0.2); border-right: 3px solid #ef4444; }
+        .active-key { background: rgba(236, 72, 153, 0.15); border-right: 3px solid #ec4899; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #831843; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 10px; }
-        .feature-badge {
-            background: #be185d;
-            font-size: 8px;
-            padding: 2px 6px;
-            border-radius: 20px;
-        }
+        .feature-badge { background: #be185d; font-size: 8px; padding: 2px 6px; border-radius: 20px; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -83,7 +65,7 @@
         </div>
     </div>
 
-    <!-- ========== لوحة التحكم (مخفية حتى تسجيل الدخول) ========== -->
+    <!-- ========== لوحة التحكم ========== -->
     <div id="admin-panel" class="max-w-7xl mx-auto space-y-6 hidden">
 
         <!-- رأس الصفحة -->
@@ -92,10 +74,8 @@
                 <h1 class="text-2xl font-bold text-pink-300">💖 لوحة تحكم Waleed Hub</h1>
                 <p class="text-xs text-pink-400/70 mt-1">مرحباً بك يا أدمن</p>
                 <div class="flex gap-2 mt-2 flex-wrap">
-                    <span class="feature-badge">🔐 ربط الحساب الأول فقط</span>
-                    <span class="feature-badge">🔄 تحديث تلقائي كل 5 ثواني</span>
-                    <span class="feature-badge">✏️ تعديل السكريبتات</span>
-                    <span class="feature-badge">⏰ صلاحية متقدمة</span>
+                    <span class="feature-badge">🔐 تخصيص المفتاح لمستخدم معين</span>
+                    <span class="feature-badge">📦 دعم الأكواد الطويلة</span>
                     <span class="feature-badge">🔗 ربط السيرفر</span>
                 </div>
             </div>
@@ -107,17 +87,17 @@
 
         <!-- مربع شرح الربط بالسيرفر -->
         <div class="card bg-gradient-to-r from-pink-900/30 to-purple-900/30 border-pink-600/40">
-            <h4 class="text-pink-300 font-bold text-lg">🔗 وش يعني "ربط السيرفر"؟</h4>
+            <h4 class="text-pink-300 font-bold text-lg">🔗 ربط السيرفر (Waleed Hub)</h4>
             <div class="text-xs text-pink-200/80 space-y-2 mt-2">
-                <p>• <span class="text-pink-400 font-bold">الربط</span> = سكريبتك يتصل بسيرفرك كل 10 ثواني يسأل: "شغال؟"</p>
+                <p>• السكربت يفحص السيرفر كل 10 ثواني</p>
                 <p>• <span class="text-green-400 font-bold">✅ شغال</span> = يشتغل عادي</p>
                 <p>• <span class="text-red-400 font-bold">❌ طافي</span> = اللاعب ينطرد فوراً</p>
-                <p>• حتى <span class="text-yellow-400 font-bold">النسخ المكررة والمشفرة</span> تنطرد 😈</p>
+                <p>• حتى <span class="text-yellow-400 font-bold">النسخ المكررة والمشفرة</span> تنطرد</p>
             </div>
         </div>
 
         <!-- مربع الكود الجاهز -->
-        <div id="result-box" class="hidden card border-pink-500/50 glow-pink space-y-3">
+        <div id="result-box" class="hidden card border-pink-500/50 space-y-3">
             <div class="flex justify-between items-center">
                 <h4 class="text-lg font-bold text-pink-400">🚀 الكود الجاهز للنشر:</h4>
                 <button onclick="closeResultBox()" class="text-pink-400/60 hover:text-pink-200">✖️</button>
@@ -149,7 +129,7 @@
                     <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="script-type" value="free" checked><span class="text-sm">🔓 مجاني</span></label>
                     <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="script-type" value="paid"><span class="text-pink-400 font-bold text-sm">🔒 مدفوع</span></label>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button onclick="uploadScript()" class="btn-pink w-full text-white font-bold py-3 rounded-xl">💾 حفظ</button>
                     <button onclick="uploadWithKeySystem()" class="bg-pink-700 hover:bg-pink-600 w-full text-white font-bold py-3 rounded-xl">🔐 مع Key System</button>
                     <button onclick="injectServerBinding()" class="btn-pink w-full text-white font-bold py-3 rounded-xl">🔗 ربط بالسيرفر</button>
@@ -177,9 +157,11 @@
                 <button onclick="refreshKeys()" class="btn-pink px-4 py-2 rounded-xl text-sm">🔄 تحديث</button>
             </div>
 
+            <!-- إنشاء مفتاح جديد مع تحديد يوزر -->
             <div class="flex gap-3 items-end flex-wrap bg-[#1a0a14]/30 p-4 rounded-xl">
                 <select id="key-script-select" class="input-field flex-1 min-w-[150px] text-sm"></select>
                 <input type="text" id="key-duration" placeholder="المدة: 7d, 1h, 1y" class="input-field flex-1 min-w-[150px] text-sm">
+                <input type="text" id="key-allowed-user" placeholder="اسم روبلوكس (اختياري)" class="input-field flex-1 min-w-[150px] text-sm">
                 <button onclick="generateKey()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-6 py-2 rounded-xl">🎲 إنشاء مفتاح</button>
             </div>
 
@@ -193,7 +175,7 @@
                 <table class="w-full text-right text-xs">
                     <thead class="sticky top-0 bg-[#2d0a1e]">
                         <tr class="text-pink-300">
-                            <th class="pb-3">المفتاح 🔑</th><th class="pb-3">السكريبت</th><th class="pb-3">المدة</th><th class="pb-3">المتبقي</th><th class="pb-3">الحساب</th><th class="pb-3">تحكم</th>
+                            <th class="pb-3">المفتاح 🔑</th><th class="pb-3">السكريبت</th><th class="pb-3">المدة</th><th class="pb-3">مخصص لـ</th><th class="pb-3">المستخدم الفعلي</th><th class="pb-3">تحكم</th>
                         </tr>
                     </thead>
                     <tbody id="keys-list-tbody"></tbody>
@@ -204,41 +186,33 @@
 
     <script>
         // ========== إعدادات تسجيل الدخول ==========
-        const ADMIN_USERNAME = "Waleed";      // غيّره لأي اسم تبيه
-        const ADMIN_PASSWORD = "kvn2026";     // غيّره لكلمة سر قوية
-        const AUTH_TOKEN = "waleed2026kvn";   // نفس التوكن في السيرفر
+        const ADMIN_USERNAME = "Waleed";
+        const ADMIN_PASSWORD = "kvn2026";
+        const AUTH_TOKEN = "waleed2026kvn";
 
         const SERVER_URL = window.location.origin;
-        let currentAiCode = "", currentAiScriptId = "", allKeysData = [], currentEditId = null;
+        let currentAiCode = "", currentAiScriptId = "", allKeysData = [];
 
-        // ========== دوال مساعدة ==========
         function getHeaders() {
             const headers = { 'Content-Type': 'application/json' };
             const token = sessionStorage.getItem('auth_token');
-            if (token) {
-                headers['Authorization'] = 'Bearer ' + token;
-            }
+            if (token) headers['Authorization'] = 'Bearer ' + token;
             return headers;
         }
 
         async function apiFetch(url, options = {}) {
             const res = await fetch(url, { ...options, headers: getHeaders() });
             if (!res.ok) {
-                if (res.status === 403) {
-                    alert("⛔ انتهت الجلسة، الرجاء تسجيل الدخول مجدداً");
-                    logout();
-                    throw new Error("غير مصرح");
-                }
-                console.warn("استجابة غير متوقعة:", res.status);
+                if (res.status === 403) { alert("⛔ انتهت الجلسة"); logout(); throw new Error("غير مصرح"); }
+                console.warn(res.status);
             }
             return res;
         }
 
-        // ========== تسجيل الدخول / الخروج ==========
         function doLogin() {
-            const user = document.getElementById('login-username').value.trim();
-            const pass = document.getElementById('login-password').value.trim();
-            if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+            if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
                 sessionStorage.setItem('waleed_logged_in', 'true');
                 sessionStorage.setItem('auth_token', AUTH_TOKEN);
                 document.getElementById('login-screen').classList.add('hidden');
@@ -255,30 +229,24 @@
             location.reload();
         }
 
-        // التحقق من الجلسة عند تحميل الصفحة
         if (sessionStorage.getItem('waleed_logged_in') === 'true') {
-            if (!sessionStorage.getItem('auth_token')) {
-                sessionStorage.setItem('auth_token', AUTH_TOKEN);
-            }
+            if (!sessionStorage.getItem('auth_token')) sessionStorage.setItem('auth_token', AUTH_TOKEN);
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('admin-panel').classList.remove('hidden');
             initPanel();
         }
 
-        // ========== دوال اللوحة ==========
         function closeResultBox() { document.getElementById('result-box').classList.add('hidden'); }
         function closeAiBox() { document.getElementById('ai-result-box').classList.add('hidden'); }
-
         async function refreshKeys() { await loadMyKeys(); }
 
         async function uploadScript(overrideSource = null, overrideId = null) {
             const id = overrideId || document.getElementById('script-id').value.trim();
             let source = overrideSource || document.getElementById('source-code').value.trim();
             const type = document.querySelector('input[name="script-type"]:checked').value;
-            if (!id || !source) return alert("⚠️ املأ الحقول!");
+            if (!id || !source) return alert("املأ الحقول!");
             const res = await apiFetch(`${SERVER_URL}/api/upload`, {
-                method: 'POST',
-                body: JSON.stringify({ id, source, type })
+                method: 'POST', body: JSON.stringify({ id, source, type })
             });
             const data = await res.json();
             if (data.success) {
@@ -293,17 +261,18 @@
 
         async function uploadWithKeySystem() {
             const id = document.getElementById('script-id').value.trim();
-            let source = document.getElementById('source-code').value.trim();
-            if (!id || !source) return alert("⚠️ املأ الحقول!");
+            const source = document.getElementById('source-code').value.trim();
+            if (!id || !source) return alert("املأ الحقول!");
             document.querySelector('input[name="script-type"][value="paid"]').checked = true;
             await uploadScript(source, id);
         }
 
+        // ========== كود ربط السيرفر (بدون KVN) ==========
         async function injectServerBinding() {
             const id = document.getElementById('script-id').value.trim();
             let source = document.getElementById('source-code').value.trim();
-            if (!id || !source) return alert("⚠️ اكتب اسم الملف وضع الكود أولاً!");
-            const bindingCode = `-- KVN Server Binding
+            if (!id || !source) return alert("اكتب اسم الملف وضع الكود!");
+            const code = `-- Waleed Hub Server Binding
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
@@ -312,33 +281,36 @@ local SCRIPT_ID = "${id}"
 local localPlayer = Players.LocalPlayer
 
 local function checkStatus()
-    local success, response = pcall(function() return game:HttpGet(SERVER_URL .. "/api/script-status/" .. SCRIPT_ID) end)
-    if not success then return false, "فشل الاتصال" end
-    local data = HttpService:JSONDecode(response)
-    if not data.active then return false, data.message or "⛔ متوقف" end
-    return true
-end
-
-local function kick(msg)
-    StarterGui:SetCore("SendNotification", { Title = "Waleed Hub", Text = msg, Duration = 5 })
-    wait(1)
-    localPlayer:Kick(msg)
+    local s, r = pcall(function() return game:HttpGet(SERVER_URL .. "/api/script-status/" .. SCRIPT_ID) end)
+    if not s then return false, "فشل الاتصال" end
+    local d = HttpService:JSONDecode(r)
+    return d.active, d.message or "⛔ متوقف"
 end
 
 local ok, msg = checkStatus()
-if not ok then kick(msg) return end
+if not ok then
+    StarterGui:SetCore("SendNotification", { Title = "Waleed Hub", Text = msg, Duration = 5 })
+    wait(1)
+    localPlayer:Kick(msg)
+    return
+end
 
 spawn(function()
     while true do wait(10)
-        local still, msg2 = checkStatus()
-        if not still then kick(msg2) break end
+        local still, m = checkStatus()
+        if not still then
+            StarterGui:SetCore("SendNotification", { Title = "Waleed Hub", Text = m, Duration = 5 })
+            wait(1)
+            localPlayer:Kick(m)
+            break
+        end
     end
 end)
 
 ` + source;
-            currentAiCode = bindingCode;
+            currentAiCode = code;
             currentAiScriptId = id;
-            document.getElementById('ai-code-output').value = bindingCode;
+            document.getElementById('ai-code-output').value = code;
             document.getElementById('ai-result-box').classList.remove('hidden');
             alert("✅ تم ربط السكريبت بالسيرفر!");
         }
@@ -390,9 +362,7 @@ end)
                         </div>
                     </div>`;
                 }
-            } catch (e) {
-                console.error("خطأ في تحميل السكريبتات:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function toggleScript(id, status) {
@@ -400,7 +370,7 @@ end)
             loadMyScripts();
         }
         async function deleteScript(id) {
-            if (confirm(`⚠️ حذف السكريبت ${id}؟`)) {
+            if (confirm(`حذف السكريبت ${id}؟`)) {
                 await apiFetch(`${SERVER_URL}/api/delete-script`, { method: 'POST', body: JSON.stringify({ id }) });
                 loadMyScripts(); loadMyKeys();
             }
@@ -412,12 +382,15 @@ end)
             document.getElementById('result-box').classList.remove('hidden');
         }
 
+        // ========== إنشاء مفتاح مع إمكانية تخصيص اسم روبلوكس ==========
         async function generateKey() {
             const scriptId = document.getElementById('key-script-select').value;
             const duration = document.getElementById('key-duration').value.trim();
+            const allowedUser = document.getElementById('key-allowed-user').value.trim();
             if (!scriptId) return alert("اختر سكريبت!");
             const res = await apiFetch(`${SERVER_URL}/api/keys/generate`, {
-                method: 'POST', body: JSON.stringify({ scriptId, duration })
+                method: 'POST',
+                body: JSON.stringify({ scriptId, duration, allowedUsername: allowedUser || null })
             });
             const data = await res.json();
             if (data.success) {
@@ -432,9 +405,7 @@ end)
                 const res = await apiFetch(`${SERVER_URL}/api/keys/list`, { method: 'POST' });
                 allKeysData = await res.json();
                 filterKeys();
-            } catch (e) {
-                console.error("خطأ في تحميل المفاتيح:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         function filterKeys() {
@@ -445,7 +416,7 @@ end)
                 filtered = filtered.filter(k => {
                     if (filterType === 'key') return k.key.toLowerCase().includes(searchTerm);
                     if (filterType === 'script') return k.scriptId.toLowerCase().includes(searchTerm);
-                    if (filterType === 'username') return (k.activatedUsername || '').toLowerCase().includes(searchTerm);
+                    if (filterType === 'username') return (k.activatedUsername || '').toLowerCase().includes(searchTerm) || (k.allowedUsername || '').toLowerCase().includes(searchTerm);
                     return k.key.toLowerCase().includes(searchTerm) || k.scriptId.toLowerCase().includes(searchTerm);
                 });
             }
@@ -458,8 +429,8 @@ end)
                 <tr class="${rowClass} key-row">
                     <td class="py-2 font-mono text-yellow-400 text-[11px]">${k.key}</td>
                     <td class="py-2 text-xs">${k.scriptId}.lua</td>
-                    <td class="py-2"><span class="duration-badge">${k.duration || 'غير محدد'}</span></td>
-                    <td class="py-2"><span class="${isExpired ? 'text-red-400' : 'text-green-400'}">${isExpired ? 'منتهي' : 'شغال'}</span></td>
+                    <td class="py-2">${k.duration || 'غير محدد'}</td>
+                    <td class="py-2 text-pink-300 font-bold">${k.allowedUsername || '⭕ غير محدد'}</td>
                     <td class="py-2">${k.activatedUsername || '⚪'}</td>
                     <td class="py-2 text-center">
                         <button onclick="resetKeyHWID('${k.key}')" class="bg-teal-600/30 hover:bg-teal-600 px-2 py-1 rounded text-[10px]">🔄</button>
@@ -474,7 +445,7 @@ end)
             loadMyKeys();
         }
         async function deleteKey(key) {
-            if (confirm(`🗑️ حذف المفتاح ${key}؟`)) {
+            if (confirm(`حذف المفتاح ${key}؟`)) {
                 await apiFetch(`${SERVER_URL}/api/keys/delete`, { method: 'POST', body: JSON.stringify({ key }) });
                 loadMyKeys();
             }
