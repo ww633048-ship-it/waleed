@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K V N | Hub Control Panel - بدون تسجيل دخول</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0b0f19;
+            color: #e2e8f0;
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+        .glow-ai {
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.35);
+        }
+        .expired-key {
+            background-color: rgba(220, 38, 38, 0.2);
+            border-right: 3px solid #ef4444;
+        }
+        .active-key {
+            background-color: rgba(34, 197, 94, 0.1);
+            border-right: 3px solid #22c55e;
+        }
+
+        @keyframes ai-pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+        .ai-loading {
+            animation: ai-pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .slide-in {
+            animation: slideDown .35s ease forwards;
+        }
+
+        .keys-table td {
+            padding: 10px 4px;
+            border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        .duration-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 20px;
+            background: #1f2937;
+        }
+        .remaining-badge {
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .feature-badge {
+            background: #7c3aed;
+            font-size: 8px;
+            padding: 2px 6px;
+            border-radius: 20px;
+        }
+
+        .refresh-animation {
+            animation: pulse 0.5s ease;
+        }
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 10px;
+        }
+
+        .edit-mode {
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-binding {
+            background: linear-gradient(135deg, #dc2626, #be185d, #7e22ce);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- لوحة التحكم - ظاهرة مباشرة بدون تسجيل دخول -->
+    <div id="admin-panel" class="max-w-7xl mx-auto space-y-6">
+
+        <!-- رأس الصفحة -->
+        <div class="flex justify-between items-center bg-[#111827] p-6 rounded-2xl border border-gray-800">
+            <div>
+                <h1 class="text-2xl font-bold text-indigo-400">لوحة تحكم K V N</h1>
+                <p class="text-xs text-gray-400 mt-1">مرحباً بك في لوحة التحكم</p>
+                <div class="flex gap-2 mt-2 flex-wrap">
+                    <span class="feature-badge">🔐 ربط الحساب الأول فقط</span>
+                    <span class="feature-badge">🔄 تحديث تلقائي كل 5 ثواني</span>
+                    <span class="feature-badge">✏️ تعديل السكريبتات</span>
+                    <span class="feature-badge">⏰ صلاحية متقدمة</span>
+                    <span class="feature-badge">🔗 حماية ضد النسخ</span>
+                </div>
+            </div>
+            <div class="text-xs text-gray-500">👑 وضع الأدمن - بدون تسجيل دخول</div>
+        </div>
+
+        <!-- مربع الكود الجاهز -->
+        <div id="result-box" class="hidden slide-in bg-[#111827] p-6 rounded-2xl border border-emerald-500/50 glow-green space-y-3">
+            <div class="flex justify-between items-center">
+                <h4 class="text-lg font-bold text-emerald-400">🚀 الكود الجاهز للنشر:</h4>
+                <button onclick="closeResultBox()" class="text-gray-400 hover:text-white">✖️</button>
+            </div>
+            <div class="flex flex-col md:flex-row gap-2">
+                <textarea id="final-link-input" readonly dir="ltr"
+            class="w-full p-3 bg-[#1f2937] border border-gray-700 rounded-xl text-emerald-400 font-mono text-xs h-24 focus:outline-none"></textarea>
+                <button onclick="copyGeneratedCode()"
+            class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2 rounded-xl transition text-sm whitespace-nowrap">نسخ 📋</button>
+            </div>
+        </div>
+
+        <!-- مربع كود AI -->
+        <div id="ai-result-box" class="hidden slide-in bg-[#111827] p-6 rounded-2xl border border-yellow-500/50 glow-ai space-y-3">
+            <div class="flex justify-between items-center flex-wrap gap-2">
+                <h4 class="text-lg font-bold text-yellow-400">🤖 الكود بعد الدمج:</h4>
+                <div class="flex gap-2">
+                    <button onclick="uploadAiCode()"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-1.5 rounded-lg transition text-xs">رفع ⬆️</button>
+                    <button onclick="copyAiCode()"
+                class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-4 py-1.5 rounded-lg transition text-xs">نسخ 📋</button>
+                    <button onclick="closeAiBox()" class="text-gray-400 hover:text-white text-xs">✖️</button>
+                </div>
+            </div>
+            <textarea id="ai-code-output" readonly dir="ltr"
+        class="w-full p-3 bg-[#0d1117] border border-gray-700 rounded-xl text-yellow-300 font-mono text-xs h-56 focus:outline-none"></textarea>
+        </div>
+
+        <!-- قسم رفع السكريبت والمفاتيح -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- رفع سكريبت جديد -->
+            <div class="md:col-span-2 bg-[#111827] p-6 rounded-2xl border border-gray-800 space-y-4">
+                <h3 class="text-lg font-bold text-purple-400">✨ رفع أو تعديل سكريبت</h3>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-2 font-bold">اسم الملف (إنجليزي فقط)</label>
+                    <input type="text" id="script-id" placeholder="مثال: 3zf أو aimbot"
+                class="w-full p-3 bg-[#1f2937] border border-gray-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-purple-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-2 font-bold">السورس كود (Lua)</label>
+                    <textarea id="source-code" rows="8" dir="ltr" placeholder="ضع كود اللوا هنا..."
+                class="w-full p-3 bg-[#1f2937] border border-gray-700 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-purple-500"></textarea>
+                </div>
+                <div class="flex gap-4 p-3 bg-[#1f2937]/50 rounded-xl border border-gray-800">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="script-type"
+                    value="free" checked><span class="text-sm">🔓 مجاني</span></label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="script-type"
+                    value="paid"><span class="text-purple-400 font-bold text-sm">🔒 مدفوع (مفاتيح + ربط الحساب)</span></label>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <button onclick="uploadScript()"
+                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition">💾
+                        حفظ وإنشاء رابط</button>
+                    <button onclick="injectKeyWithAI()"
+                class="w-full bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition"><span
+                    id="ai-btn-text">🤖 دمج Key System</span></button>
+                    <button onclick="uploadWithKeySystem()"
+                class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition">🔐
+                        رفع مع Key System (بدون AI)</button>
+                    <button onclick="injectServerBinding()"
+                class="btn-binding w-full text-white font-bold py-3 rounded-xl hover:opacity-90 transition shadow-lg">🔗 ربط
+                        سكربتك بالسيرفر</button>
+                </div>
+                <div id="edit-warning"
+            class="hidden p-3 bg-blue-900/20 border border-blue-700/40 rounded-xl text-xs text-blue-300/80">
+                    <p class="font-bold text-blue-400">✏️ وضع التعديل:</p>
+                    <p>• الكود القديم محفوظ، التعديل سيحافظ على نظام المفاتيح</p>
+                    <p>• المفاتيح المرتبطة لن تروح</p>
+                    <button onclick="cancelEdit()"
+                class="mt-2 bg-red-600/50 hover:bg-red-600 px-3 py-1 rounded text-xs">إلغاء التعديل</button>
+                </div>
+                <div class="p-3 bg-green-900/20 border border-green-700/40 rounded-xl text-xs text-green-300/80">
+                    <p class="font-bold text-green-400">⚡ مميزات نظام الحماية:</p>
+                    <p>• 🔐 المفتاح يرتبط بأول حساب Roblox يستخدمه</p>
+                    <p>• 🔴 أي حساب ثاني يحاول يستخدم نفس المفتاح = طرد فوري</p>
+                    <p>• 🔄 تحديث تلقائي للبيانات في لوحة التحكم</p>
+                    <p>• ✏️ تعديل السكريبتات بدون فقدان المفاتيح</p>
+                    <p>• 🔗 ربط السكريبت بالسيرفر = لو أوقفته يتقفل على الكل حتى اللي عنده نسخة</p>
+                </div>
+            </div>
+
+            <!-- قائمة الملفات -->
+            <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800 space-y-4">
+                <h3 class="text-lg font-bold text-indigo-400">📂 الملفات</h3>
+                <div id="files-list" class="space-y-3 max-h-[460px] overflow-y-auto pr-1"></div>
+            </div>
+        </div>
+
+        <!-- جدول المفاتيح -->
+        <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800 space-y-4">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <h3 class="text-lg font-bold text-teal-400">📋 المفاتيح والصلاحية</h3>
+                <div class="flex gap-2 flex-wrap">
+                    <input type="text" id="search-input" placeholder="🔍 بحث..."
+                class="w-64 p-2 bg-[#1f2937] border border-gray-700 rounded-xl text-white text-sm">
+                    <select id="search-filter"
+                class="p-2 bg-[#1f2937] border border-gray-700 rounded-xl text-white text-sm">
+                        <option value="all">الكل</option>
+                        <option value="key">المفتاح</option>
+                        <option value="script">السكريبت</option>
+                        <option value="username">اليوزر</option>
+                    </select>
+                    <button onclick="refreshKeys()" id="refresh-btn"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition text-sm">🔄
+                        تحديث</button>
+                    <span id="search-count" class="text-xs text-gray-400 self-center"></span>
+                </div>
+            </div>
+
+            <!-- إنشاء مفتاح جديد -->
+            <div class="flex gap-3 items-end bg-[#1f2937]/30 p-4 rounded-xl flex-wrap">
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-xs text-gray-400 mb-1">السكريبت:</label>
+                    <select id="key-script-select"
+                class="w-full p-2 bg-[#1f2937] border border-gray-700 rounded-xl text-white text-sm"></select>
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-xs text-gray-400 mb-1">المدة (مثال: 30d, 12h, 1y):</label>
+                    <input type="text" id="key-duration" placeholder="1h / 1d / 1m / 1y / 30min"
+                class="w-full p-2 bg-[#1f2937] border border-gray-700 rounded-xl text-white text-sm">
+                </div>
+                <button onclick="generateKey()"
+            class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-6 py-2 rounded-xl transition">🎲 إنشاء
+                    مفتاح</button>
+            </div>
+
+            <!-- عرض المفتاح الجديد -->
+            <div id="generated-key-box"
+        class="hidden p-3 bg-[#1f2937] border border-yellow-600/50 rounded-xl text-center">
+                <p class="text-xs text-gray-400">✅ تم الإنشاء:</p>
+                <p id="generated-key-text" class="text-sm font-bold text-yellow-400 font-mono mt-1"></p>
+                <p id="generated-expiry" class="text-xs text-gray-400 mt-1"></p>
+                <button onclick="copyKey()"
+            class="mt-2 text-xs bg-yellow-700/50 hover:bg-yellow-700 px-3 py-1 rounded-lg">نسخ 📋</button>
+            </div>
+
+            <!-- جدول المفاتيح -->
+            <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                <table class="w-full text-right text-xs keys-table">
+                    <thead class="sticky top-0 bg-[#111827]">
+                        <tr class="border-b border-gray-800 text-gray-400">
+                            <th class="pb-3">المفتاح 🔑</th>
+                            <th class="pb-3">السكريبت</th>
+                            <th class="pb-3">المدة</th>
+                            <th class="pb-3">المتبقي</th>
+                            <th class="pb-3">الحساب المرتبط</th>
+                            <th class="pb-3 text-center">تحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keys-list-tbody"></tbody>
+                </table>
+                <div id="no-results-message" class="hidden text-center p-4 text-gray-400">❌ لا توجد نتائج</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = window.location.origin;
+        let currentAiCode = "";
+        let currentAiScriptId = "";
+        let allKeysData = [];
+        let refreshInterval = null;
+        let currentEditId = null;
+
+        // ========== دوال مساعدة - بدون توثيق ==========
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json'
+            };
+        }
+
+        async function apiFetch(url, options = {}) {
+            const res = await fetch(url, {
+                ...options,
+                headers: getHeaders()
+            });
+            if (!res.ok) {
+                console.warn("⚠️ استجابة غير متوقعة:", res.status);
+            }
+            return res;
+        }
+
+        function closeResultBox() {
+            document.getElementById('result-box').classList.add('hidden');
+        }
+
+        function closeAiBox() {
+            document.getElementById('ai-result-box').classList.add('hidden');
+        }
+
+        function cancelEdit() {
+            currentEditId = null;
+            document.getElementById('script-id').value = "";
+            document.getElementById('source-code').value = "";
+            document.getElementById('edit-warning').classList.add('hidden');
+            document.getElementById('script-id').classList.remove('edit-mode');
+            document.querySelector('input[name="script-type"][value="free"]').checked = true;
+        }
+
+        async function refreshKeys() {
+            const btn = document.getElementById('refresh-btn');
+            btn.classList.add('refresh-animation');
+            await loadMyKeys();
+            setTimeout(() => btn.classList.remove('refresh-animation'), 500);
+        }
+
+        // ========== رفع السكريبت العادي ==========
+        async function uploadScript(overrideSource = null, overrideId = null) {
+            const id = overrideId || document.getElementById('script-id').value.trim();
+            let source = overrideSource || document.getElementById('source-code').value.trim();
+            const type = document.querySelector('input[name="script-type"]:checked').value;
+
+            if (!id || !source) return alert("⚠️ املأ الحقول!");
+
+            const res = await apiFetch(`${SERVER_URL}/api/upload`, {
+                method: 'POST',
+                body: JSON.stringify({ id, source, type })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                let ls = `loadstring(game:HttpGet("${SERVER_URL}/load/${id}.lua"))()`;
+                if (type === 'paid') ls = `_G.Key = "مفتاحك"\n` + ls;
+                document.getElementById('final-link-input').value = ls;
+                document.getElementById('result-box').classList.remove('hidden');
+                if (!overrideSource) {
+                    cancelEdit();
+                }
+                loadMyScripts();
+                loadMyKeys();
+                alert("✅ تم الحفظ بنجاح!");
+            } else alert("❌ " + data.message);
+        }
+
+        async function uploadWithKeySystem() {
+            const id = document.getElementById('script-id').value.trim();
+            let source = document.getElementById('source-code').value.trim();
+            const type = document.querySelector('input[name="script-type"]:checked').value;
+
+            if (!id || !source) return alert("⚠️ املأ الحقول!");
+
+            if (type !== 'paid') {
+                if (!confirm("⚠️ هذا السكريبت ليس مدفوعاً. هل تريد تحويله إلى مدفوع مع Key System؟")) {
+                    return;
+                }
+                document.querySelector('input[name="script-type"][value="paid"]').checked = true;
+            }
+
+            const res = await apiFetch(`${SERVER_URL}/api/upload`, {
+                method: 'POST',
+                body: JSON.stringify({ id, source, type: 'paid' })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                let ls = `loadstring(game:HttpGet("${SERVER_URL}/load/${id}.lua"))()`;
+                ls = `_G.Key = "مفتاحك"\n` + ls;
+                document.getElementById('final-link-input').value = ls;
+                document.getElementById('result-box').classList.remove('hidden');
+                cancelEdit();
+                loadMyScripts();
+                loadMyKeys();
+                alert("✅ تم رفع الكود مع Key System بنجاح!");
+            } else {
+                alert("❌ فشل الرفع: " + data.message);
+            }
+        }
+
+        async function injectKeyWithAI() {
+            const id = document.getElementById('script-id').value.trim();
+            const source = document.getElementById('source-code').value.trim();
+            const type = document.querySelector('input[name="script-type"]:checked').value;
+            if (!id || !source) return alert("⚠️ املأ الحقول!");
+            if (type !== 'paid') return alert("⚠️ اختر مدفوع!");
+            const btn = document.getElementById('ai-btn-text');
+            btn.innerHTML = '<span class="ai-loading">جاري...</span>';
+            const res = await apiFetch(`${SERVER_URL}/api/ai/inject-key`, {
+                method: 'POST',
+                body: JSON.stringify({ source, scriptId: id, serverUrl: SERVER_URL })
+            });
+            const data = await res.json();
+            btn.innerHTML = '🤖 دمج Key System';
+            if (data.success) {
+                currentAiCode = data.code;
+                currentAiScriptId = id;
+                document.getElementById('ai-code-output').value = data.code;
+                document.getElementById('ai-result-box').classList.remove('hidden');
+            } else alert("❌ خطأ");
+        }
+
+        // ========== ربط السكريبت بالسيرفر (حماية ضد النسخ) ==========
+        async function injectServerBinding() {
+            const id = document.getElementById('script-id').value.trim();
+            let source = document.getElementById('source-code').value.trim();
+
+            if (!id || !source) {
+                return alert("⚠️ اكتب اسم الملف وضع الكود أولاً!");
+            }
+
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="ai-loading">🔗 جاري الربط مع السيرفر...</span>';
+            btn.disabled = true;
+
+            const bindingCode = `-- ============================================
+        -- 🔗 KVN Server Binding System
+        -- ربط السكريبت بالسيرفر - منع النسخ
+        -- لو أوقفته من الموقع => يتقفل على الكل فوراً
+        -- ============================================
+
+        local Players = game:GetService("Players")
+        local StarterGui = game:GetService("StarterGui")
+        local HttpService = game:GetService("HttpService")
+
+        local SERVER_URL = "${SERVER_URL}"
+        local SCRIPT_ID = "${id}"
+        local localPlayer = Players.LocalPlayer
+
+        -- التحقق من حالة السكريبت من السيرفر
+        local function checkServerStatus()
+            local url = SERVER_URL .. "/api/script-status/" .. SCRIPT_ID
+
+            local success, response = pcall(function()
+                return game:HttpGet(url)
+            end)
+
+            if not success then
+                return false, "فشل الاتصال بالسيرفر"
+            end
+
+            local decoded
+            local decodeSuccess = pcall(function()
+                decoded = HttpService:JSONDecode(response)
+            end)
+
+            if not decodeSuccess or not decoded then
+                return false, "خطأ في استجابة السيرفر"
+            end
+
+            if not decoded.active then
+                return false, decoded.message or "⛔ السكريبت متوقف من قبل الأدمن"
+            end
+
+            return true, "✅ السكريبت شغال"
+        end
+
+        -- طرد اللاعب
+        local function kickPlayer(reason)
+            pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = "🔒 تم إيقاف السكريبت",
+                    Text = reason or "تم إيقاف هذا السكريبت من لوحة التحكم",
+                    Duration = 5
+                })
+            end)
+            wait(1)
+            pcall(function()
+                localPlayer:Kick(reason or "⛔ السكريبت متوقف")
+            end)
+        end
+
+        -- التحقق المستمر
+        local function startServerBinding()
+            local isActive, msg = checkServerStatus()
+
+            if not isActive then
+                kickPlayer(msg)
+                return false
+            end
+
+            pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = "🔗 السكريبت مربوط بالسيرفر",
+                    Text = "✅ إذا أوقفه الأدمن سيتوقف عندك فوراً",
+                    Duration = 3
+                })
+            end)
+
+            -- كل 10 ثواني يتحقق
+            spawn(function()
+                while true do
+                    wait(10)
+                    local stillActive, kickMsg = checkServerStatus()
+                    if not stillActive then
+                        kickPlayer(kickMsg)
+                        break
+                    end
+                end
+            end)
+
+            return true
+        end
+
+        if not startServerBinding() then
+            return
+        end
+
+        -- ============================================
+        -- كودك الأصلي يبدأ من هنا
+        -- ============================================
+
+        ` + source;
+
+            currentAiCode = bindingCode;
+            currentAiScriptId = id;
+            document.getElementById('ai-code-output').value = bindingCode;
+            document.getElementById('ai-result-box').classList.remove('hidden');
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+
+            alert(
+                "✅ تم ربط السكريبت بالسيرفر بنجاح!\n\n🔒 الآن:\n• السكريبت يتصل بالسيرفر كل 10 ثواني\n• لو أوقفت السكريبت من لوحة التحكم → يتقفل على الكل فوراً\n• حتى اللي عنده نسخة مشفرة قديمة → ما راح تشتغل\n\n📋 الكود جاهز بالصندوق الأصفر، انسخه واستخدمه"
+                );
+        }
+
+        async function uploadAiCode() {
+            if (!currentAiCode) return alert("لا يوجد كود");
+            document.querySelector('input[name="script-type"][value="paid"]').checked = true;
+            await uploadScript(currentAiCode, currentAiScriptId);
+            document.getElementById('ai-result-box').classList.add('hidden');
+        }
+
+        function copyAiCode() {
+            const ta = document.getElementById('ai-code-output');
+            ta.select();
+            document.execCommand('copy');
+            alert('✅ تم نسخ الكود!');
+        }
+
+        function copyGeneratedCode() {
+            const ta = document.getElementById('final-link-input');
+            ta.select();
+            document.execCommand('copy');
+            alert('✅ تم نسخ الكود!');
+        }
+
+        function copyKey() {
+            const txt = document.getElementById('generated-key-text').innerText;
+            navigator.clipboard.writeText(txt);
+            alert('✅ تم نسخ المفتاح!');
+        }
+
+        // ========== تحميل قائمة السكريبتات ==========
+        async function loadMyScripts() {
+            try {
+                const res = await apiFetch(`${SERVER_URL}/api/list`, { method: 'POST' });
+                const scripts = await res.json();
+                const container = document.getElementById('files-list');
+                const selectDD = document.getElementById('key-script-select');
+                container.innerHTML = "";
+                selectDD.innerHTML = "<option value=''>-- اختر --</option>";
+
+                for (let id in scripts) {
+                    const sc = scripts[id];
+                    if (sc.type === 'paid') {
+                        let opt = document.createElement('option');
+                        opt.value = id;
+                        opt.innerText = id;
+                        selectDD.appendChild(opt);
+                    }
+                    container.innerHTML += `
+                <div class="p-3 bg-[#1f2937]/50 rounded-xl border border-gray-700">
+                    <div class="flex justify-between">
+                        <span class="font-mono text-xs">${id}.lua</span>
+                        <span class="text-[10px] ${sc.active ? 'text-green-400' : 'text-red-400'}">${sc.active ? 'شغال' : 'طافي'}</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1 mt-2">
+                        <button onclick="toggleScript('${id}', true)" class="bg-green-600 text-[9px] p-1 rounded">تشغيل</button>
+                        <button onclick="toggleScript('${id}', false)" class="bg-amber-600 text-[9px] p-1 rounded">إيقاف</button>
+                        <button onclick="showLink('${id}','${sc.type}')" class="bg-indigo-600 text-[9px] p-1 rounded">رابط</button>
+                        <button onclick="editScript('${id}')" class="bg-blue-600 text-[9px] p-1 rounded">✏️ تعديل</button>
+                        <button onclick="deleteScript('${id}')" class="bg-red-600 text-[9px] p-1 rounded">🗑️ حذف</button>
+                    </div>
+                </div>`;
+                }
+            } catch (e) {
+                console.error("خطأ في تحميل السكريبتات:", e);
+            }
+        }
+
+        async function toggleScript(id, status) {
+            await apiFetch(`${SERVER_URL}/api/toggle`, {
+                method: 'POST',
+                body: JSON.stringify({ id, active: status })
+            });
+            loadMyScripts();
+        }
+
+        async function deleteScript(id) {
+            if (confirm(`⚠️ حذف السكريبت ${id}؟\nملاحظة: المفاتيح المرتبطة بهذا السكريبت ستحذف أيضاً!`)) {
+                await apiFetch(`${SERVER_URL}/api/delete-script`, {
+                    method: 'POST',
+                    body: JSON.stringify({ id })
+                });
+                loadMyScripts();
+                loadMyKeys();
+                cancelEdit();
+            }
+        }
+
+        async function editScript(id) {
+            const res = await apiFetch(`${SERVER_URL}/api/get-script-source`, {
+                method: 'POST',
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentEditId = id;
+                document.getElementById('source-code').value = data.source;
+                document.getElementById('script-id').value = id;
+                document.getElementById('script-id').classList.add('edit-mode');
+                document.getElementById('edit-warning').classList.remove('hidden');
+
+                const res2 = await apiFetch(`${SERVER_URL}/api/list`, { method: 'POST' });
+                const scripts = await res2.json();
+
+                if (scripts[id] && scripts[id].type === 'paid') {
+                    document.querySelector('input[name="script-type"][value="paid"]').checked = true;
+                } else {
+                    document.querySelector('input[name="script-type"][value="free"]').checked = true;
+                }
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                alert(`✏️ جاري تعديل: ${id}.lua\nبعد التعديل اضغط "حفظ وإنشاء رابط"`);
+            } else {
+                alert("❌ خطأ في جلب الكود: " + data.message);
+            }
+        }
+
+        function showLink(id, type) {
+            let ls = `loadstring(game:HttpGet("${SERVER_URL}/load/${id}.lua"))()`;
+            if (type === 'paid') ls = `_G.Key = "مفتاحك"\n` + ls;
+            document.getElementById('final-link-input').value = ls;
+            document.getElementById('result-box').classList.remove('hidden');
+        }
+
+        // ========== إدارة المفاتيح ==========
+        async function generateKey() {
+            const scriptId = document.getElementById('key-script-select').value;
+            const duration = document.getElementById('key-duration').value.trim();
+            if (!scriptId) return alert("اختر سكريبت!");
+            const res = await apiFetch(`${SERVER_URL}/api/keys/generate`, {
+                method: 'POST',
+                body: JSON.stringify({ scriptId, duration })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('generated-key-text').innerText = data.key;
+                document.getElementById('generated-expiry').innerHTML = data.expiryDate ?
+                    `⏰ تنتهي: ${new Date(data.expiryDate).toLocaleString('ar')}` : '⏰ غير محددة';
+                document.getElementById('generated-key-box').classList.remove('hidden');
+                loadMyKeys();
+                setTimeout(() => document.getElementById('generated-key-box').classList.add('hidden'), 10000);
+            } else alert("❌ " + data.message);
+        }
+
+        async function loadMyKeys(silent = false) {
+            try {
+                const res = await apiFetch(`${SERVER_URL}/api/keys/list`, { method: 'POST' });
+                allKeysData = await res.json();
+                filterKeys();
+            } catch (e) {
+                console.error("خطأ في تحميل المفاتيح:", e);
+            }
+        }
+
+        async function updateKeyDuration(key) {
+            const newDuration = prompt("أدخل المدة الجديدة:\nمثال: 1h, 2d, 3m, 1y, 30min");
+            if (!newDuration) return;
+            const res = await apiFetch(`${SERVER_URL}/api/keys/update-duration`, {
+                method: 'POST',
+                body: JSON.stringify({ key, duration: newDuration })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(`✅ تم التحديث!`);
+                loadMyKeys();
+            } else alert("❌ " + data.message);
+        }
+
+        function filterKeys() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const filterType = document.getElementById('search-filter').value;
+            let filtered = [...allKeysData];
+
+            if (searchTerm) {
+                filtered = filtered.filter(k => {
+                    if (filterType === 'key') return k.key.toLowerCase().includes(searchTerm);
+                    if (filterType === 'script') return k.scriptId.toLowerCase().includes(searchTerm);
+                    if (filterType === 'username') return (k.activatedUsername || '').toLowerCase()
+                        .includes(searchTerm);
+                    return k.key.toLowerCase().includes(searchTerm) ||
+                        k.scriptId.toLowerCase().includes(searchTerm) ||
+                        (k.activatedUsername || '').toLowerCase().includes(searchTerm);
+                });
+            }
+
+            document.getElementById('search-count').innerHTML =
+                `📊 ${filtered.length}/${allKeysData.length}`;
+            const tbody = document.getElementById('keys-list-tbody');
+            const noResults = document.getElementById('no-results-message');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            tbody.innerHTML = '';
+
+            filtered.forEach(k => {
+                const isExpired = k.isExpired;
+                const rowClass = isExpired ? 'expired-key' : 'active-key';
+                const expiryDate = k.expiryDate ? new Date(k.expiryDate).toLocaleString('ar') :
+                    'غير محددة';
+                const remaining = k.remaining || (isExpired ? 'منتهي ❌' : 'غير محددة');
+                const boundUser = k.activatedUsername || '⚪ غير مرتبط';
+
+                tbody.innerHTML += `
+            <tr class="${rowClass} border-b border-gray-800">
+                <td class="py-2 font-mono text-yellow-400 text-[11px]">${k.key}</td>
+                <td class="py-2 font-mono text-xs">${k.scriptId}.lua</td>
+                <td class="py-2"><span class="duration-badge">${k.duration || 'غير محدد'}</span></td>
+                <td class="py-2"><span class="remaining-badge ${isExpired ? 'text-red-400' : 'text-green-400'}">${remaining}</span><br><span class="text-[9px] text-gray-500">${expiryDate}</span></td>
+                <td class="py-2"><span class="${k.activatedUsername ? 'text-green-400 font-bold' : 'text-gray-500'}">${boundUser}</span></td>
+                <td class="py-2 text-center">
+                    <button onclick="updateKeyDuration('${k.key}')" class="bg-blue-600/30 hover:bg-blue-600 text-white px-2 py-1 rounded text-[10px] mx-1">✏️ تعديل</button>
+                    <button onclick="resetKeyHWID('${k.key}')" class="bg-teal-600/30 hover:bg-teal-600 px-2 py-1 rounded text-[10px] mx-1">🔄 تصفير</button>
+                    <button onclick="deleteKey('${k.key}')" class="bg-red-600/30 hover:bg-red-600 px-2 py-1 rounded text-[10px] mx-1">🗑️ حذف</button>
+                </td>
+            </tr>`;
+            });
+        }
+
+        async function resetKeyHWID(key) {
+            await apiFetch(`${SERVER_URL}/api/keys/reset`, {
+                method: 'POST',
+                body: JSON.stringify({ key })
+            });
+            loadMyKeys();
+        }
+
+        async function deleteKey(key) {
+            if (confirm(`🗑️ حذف المفتاح ${key}؟`)) {
+                await apiFetch(`${SERVER_URL}/api/keys/delete`, {
+                    method: 'POST',
+                    body: JSON.stringify({ key })
+                });
+                loadMyKeys();
+            }
+        }
+
+        // ========== بدء التشغيل المباشر بدون تسجيل دخول ==========
+        function initPanel() {
+            loadMyScripts();
+            loadMyKeys();
+
+            document.getElementById('search-input').addEventListener('input', filterKeys);
+            document.getElementById('search-filter').addEventListener('change', filterKeys);
+
+            refreshInterval = setInterval(() => {
+                loadMyKeys(true);
+            }, 5000);
+        }
+
+        // تشغيل اللوحة مباشرة
+        initPanel();
+    </script>
+</body>
+</html>
