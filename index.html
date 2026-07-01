@@ -3,461 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waleed Hub | لوحة تحكم</title>
+    <title>Waliy Hub | لوحة تحكم</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #1a0a14;
-            color: #fce7f3;
-        }
-        .login-box {
-            background: #2d0a1e;
-            border: 1px solid #ec4899;
-            box-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
-        }
-        .btn-pink {
-            background: linear-gradient(135deg, #ec4899, #be185d);
-            transition: all 0.3s;
-        }
+        body { font-family: 'Cairo', sans-serif; background-color: #1a0a14; color: #fce7f3; }
+        .login-box { background: #2d0a1e; border: 1px solid #ec4899; box-shadow: 0 0 30px rgba(236, 72, 153, 0.3); }
+        .btn-pink { background: linear-gradient(135deg, #ec4899, #be185d); transition: all 0.3s; }
         .btn-pink:hover { background: linear-gradient(135deg, #f472b6, #db2777); }
-        .card {
-            background: #2d0a1e;
-            border: 1px solid #be185d;
-            border-radius: 16px;
-            padding: 1.5rem;
-        }
-        .input-field {
-            background: #1a0a14;
-            border: 1px solid #ec4899;
-            color: #fce7f3;
-            padding: 0.75rem;
-            border-radius: 12px;
-            width: 100%;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #f472b6;
-            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
-        }
-        .key-row { border-bottom: 1px solid rgba(236, 72, 153, 0.3); }
-        .expired { background: rgba(220, 38, 38, 0.2); border-right: 3px solid #ef4444; }
-        .active-key { background: rgba(236, 72, 153, 0.15); border-right: 3px solid #ec4899; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #831843; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 10px; }
-        .feature-badge { background: #be185d; font-size: 8px; padding: 2px 6px; border-radius: 20px; }
+        .card { background: #2d0a1e; border: 1px solid #be185d; border-radius: 16px; padding: 1.5rem; }
+        .input-field { background: #1a0a14; border: 1px solid #ec4899; color: #fce7f3; padding: 0.75rem; border-radius: 12px; width: 100%; }
+        .input-field:focus { outline: none; border-color: #f472b6; box-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <!-- ========== شاشة تسجيل الدخول ========== -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center">
         <div class="login-box p-8 rounded-2xl w-full max-w-md text-center space-y-5">
-            <h2 class="text-3xl font-bold text-pink-300">💖 Waleed Hub</h2>
+            <h2 class="text-3xl font-bold text-pink-300">💖 Waliy Hub</h2>
             <p class="text-pink-400/70 text-sm">لوحة تحكم الأدمن</p>
             <input type="text" id="login-username" placeholder="👤 اسم المستخدم" class="input-field text-center">
             <input type="password" id="login-password" placeholder="🔒 كلمة المرور" class="input-field text-center">
             <button onclick="doLogin()" class="btn-pink w-full text-white font-bold py-3 rounded-xl transition">دخول</button>
             <p id="login-error" class="text-red-400 text-sm hidden">❌ اسم المستخدم أو كلمة المرور خطأ</p>
-            <p class="text-[10px] text-pink-500/50">© 2026 Waleed - جميع الحقوق محفوظة</p>
         </div>
     </div>
 
-    <!-- ========== لوحة التحكم ========== -->
     <div id="admin-panel" class="max-w-7xl mx-auto space-y-6 hidden">
-
-        <!-- رأس الصفحة -->
         <div class="card flex justify-between items-center flex-wrap gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-pink-300">💖 لوحة تحكم Waleed Hub</h1>
-                <p class="text-xs text-pink-400/70 mt-1">مرحباً بك يا أدمن</p>
-                <div class="flex gap-2 mt-2 flex-wrap">
-                    <span class="feature-badge">🔐 تخصيص المفتاح لمستخدم معين</span>
-                    <span class="feature-badge">📦 دعم الأكواد الطويلة</span>
-                    <span class="feature-badge">🔗 ربط السيرفر</span>
-                </div>
-            </div>
-            <div class="text-xs text-pink-400/60 flex items-center gap-3">
-                <span>👑 Waleed | جميع الحقوق محفوظة © 2026</span>
-                <button onclick="logout()" class="bg-red-600/30 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs">تسجيل خروج 🚪</button>
-            </div>
+            <h1 class="text-2xl font-bold text-pink-300">💖 لوحة تحكم Waliy Hub</h1>
+            <button onclick="logout()" class="bg-red-600/30 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm">تسجيل خروج 🚪</button>
         </div>
 
-        <!-- مربع شرح الربط بالسيرفر -->
-        <div class="card bg-gradient-to-r from-pink-900/30 to-purple-900/30 border-pink-600/40">
-            <h4 class="text-pink-300 font-bold text-lg">🔗 ربط السيرفر (Waleed Hub)</h4>
-            <div class="text-xs text-pink-200/80 space-y-2 mt-2">
-                <p>• السكربت يفحص السيرفر كل 10 ثواني</p>
-                <p>• <span class="text-green-400 font-bold">✅ شغال</span> = يشتغل عادي</p>
-                <p>• <span class="text-red-400 font-bold">❌ طافي</span> = اللاعب ينطرد فوراً</p>
-                <p>• حتى <span class="text-yellow-400 font-bold">النسخ المكررة والمشفرة</span> تنطرد</p>
-            </div>
-        </div>
-
-        <!-- مربع الكود الجاهز -->
-        <div id="result-box" class="hidden card border-pink-500/50 space-y-3">
-            <div class="flex justify-between items-center">
-                <h4 class="text-lg font-bold text-pink-400">🚀 الكود الجاهز للنشر:</h4>
-                <button onclick="closeResultBox()" class="text-pink-400/60 hover:text-pink-200">✖️</button>
-            </div>
-            <textarea id="final-link-input" readonly dir="ltr" class="w-full p-3 bg-[#1a0a14] border border-pink-700/50 rounded-xl text-pink-300 font-mono text-xs h-24 focus:outline-none"></textarea>
-            <button onclick="copyGeneratedCode()" class="btn-pink text-white font-bold px-6 py-2 rounded-xl text-sm">نسخ 📋</button>
-        </div>
-
-        <!-- مربع كود AI -->
-        <div id="ai-result-box" class="hidden card border-yellow-500/50 space-y-3">
-            <div class="flex justify-between items-center">
-                <h4 class="text-lg font-bold text-yellow-400">🤖 الكود بعد الدمج:</h4>
-                <div class="flex gap-2">
-                    <button onclick="uploadAiCode()" class="bg-pink-700 hover:bg-pink-600 text-white px-3 py-1 rounded text-xs">رفع ⬆️</button>
-                    <button onclick="copyAiCode()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-xs">نسخ 📋</button>
-                    <button onclick="closeAiBox()" class="text-pink-400/60 hover:text-pink-200 text-xs">✖️</button>
-                </div>
-            </div>
-            <textarea id="ai-code-output" readonly dir="ltr" class="w-full p-3 bg-[#0d1117] border border-pink-700/50 rounded-xl text-yellow-300 font-mono text-xs h-56 focus:outline-none"></textarea>
-        </div>
-
-        <!-- قسم رفع السكريبت -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="md:col-span-2 card space-y-4">
-                <h3 class="text-lg font-bold text-pink-400">✨ رفع أو تعديل سكريبت</h3>
-                <input type="text" id="script-id" placeholder="اسم الملف (إنجليزي فقط)" class="input-field">
-                <textarea id="source-code" rows="8" dir="ltr" placeholder="ضع كود اللوا هنا..." class="input-field"></textarea>
-                <div class="flex gap-4 p-3 bg-[#1a0a14]/50 rounded-xl border border-pink-700/30">
-                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="script-type" value="free" checked><span class="text-sm">🔓 مجاني</span></label>
-                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="script-type" value="paid"><span class="text-pink-400 font-bold text-sm">🔒 مدفوع</span></label>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <button onclick="uploadScript()" class="btn-pink w-full text-white font-bold py-3 rounded-xl">💾 حفظ</button>
-                    <button onclick="uploadWithKeySystem()" class="bg-pink-700 hover:bg-pink-600 w-full text-white font-bold py-3 rounded-xl">🔐 مع Key System</button>
-                    <button onclick="injectServerBinding()" class="btn-pink w-full text-white font-bold py-3 rounded-xl">🔗 ربط بالسيرفر</button>
-                </div>
-            </div>
-
-            <!-- قائمة الملفات -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="card space-y-4">
-                <h3 class="text-lg font-bold text-pink-300">📂 الملفات</h3>
-                <div id="files-list" class="space-y-3 max-h-[460px] overflow-y-auto pr-1"></div>
-            </div>
-        </div>
-
-        <!-- جدول المفاتيح -->
-        <div class="card space-y-4">
-            <h3 class="text-lg font-bold text-pink-300">📋 المفاتيح والصلاحية</h3>
-            <div class="flex gap-2 flex-wrap">
-                <input type="text" id="search-input" placeholder="🔍 بحث..." class="input-field w-64 text-sm">
-                <select id="search-filter" class="input-field w-auto text-sm">
-                    <option value="all">الكل</option>
-                    <option value="key">المفتاح</option>
-                    <option value="script">السكريبت</option>
-                    <option value="username">اليوزر</option>
-                </select>
-                <button onclick="refreshKeys()" class="btn-pink px-4 py-2 rounded-xl text-sm">🔄 تحديث</button>
+                <h3 class="text-lg font-bold text-pink-400">✨ إنشاء سكربت</h3>
+                <input type="text" id="script-name" placeholder="اسم السكربت" class="input-field">
+                <input type="text" id="target-username" placeholder="يوزرنيم محدد (اختياري)" class="input-field">
+                <input type="text" id="kick-message" placeholder="رسالة الطرد" class="input-field">
+                <input type="text" id="expiry-duration" placeholder="المدة: 7d, 1h, 1y (اختياري)" class="input-field">
+                <textarea id="lua-content" rows="6" placeholder="كود Lua هنا..." class="input-field" dir="ltr"></textarea>
+                <button onclick="createScript()" class="btn-pink w-full text-white font-bold py-3 rounded-xl">💾 حفظ</button>
             </div>
 
-            <!-- إنشاء مفتاح جديد مع تحديد يوزر -->
-            <div class="flex gap-3 items-end flex-wrap bg-[#1a0a14]/30 p-4 rounded-xl">
-                <select id="key-script-select" class="input-field flex-1 min-w-[150px] text-sm"></select>
-                <input type="text" id="key-duration" placeholder="المدة: 7d, 1h, 1y" class="input-field flex-1 min-w-[150px] text-sm">
-                <input type="text" id="key-allowed-user" placeholder="اسم روبلوكس (اختياري)" class="input-field flex-1 min-w-[150px] text-sm">
-                <button onclick="generateKey()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-6 py-2 rounded-xl">🎲 إنشاء مفتاح</button>
-            </div>
-
-            <div id="generated-key-box" class="hidden p-3 bg-[#1a0a14] border border-yellow-600/50 rounded-xl text-center">
-                <p class="text-xs text-pink-400">✅ تم الإنشاء:</p>
-                <p id="generated-key-text" class="text-sm font-bold text-yellow-400 font-mono mt-1"></p>
-                <button onclick="copyKey()" class="mt-2 text-xs bg-yellow-700/50 hover:bg-yellow-700 px-3 py-1 rounded-lg">نسخ 📋</button>
-            </div>
-
-            <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
-                <table class="w-full text-right text-xs">
-                    <thead class="sticky top-0 bg-[#2d0a1e]">
-                        <tr class="text-pink-300">
-                            <th class="pb-3">المفتاح 🔑</th><th class="pb-3">السكريبت</th><th class="pb-3">المدة</th><th class="pb-3">مخصص لـ</th><th class="pb-3">المستخدم الفعلي</th><th class="pb-3">تحكم</th>
-                        </tr>
-                    </thead>
-                    <tbody id="keys-list-tbody"></tbody>
-                </table>
+            <div class="card space-y-4">
+                <h3 class="text-lg font-bold text-pink-300">📂 السكربتات</h3>
+                <div id="scripts-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // ========== إعدادات تسجيل الدخول ==========
-        const ADMIN_USERNAME = "Waleed";
-        const ADMIN_PASSWORD = "kvn2026";
-        const AUTH_TOKEN = "waleed2026kvn";
-
-        const SERVER_URL = window.location.origin;
-        let currentAiCode = "", currentAiScriptId = "", allKeysData = [];
-
-        function getHeaders() {
-            const headers = { 'Content-Type': 'application/json' };
-            const token = sessionStorage.getItem('auth_token');
-            if (token) headers['Authorization'] = 'Bearer ' + token;
-            return headers;
+        async function api(url, options = {}) {
+            const res = await fetch(url, { ...options, headers: { 'Content-Type': 'application/json' } });
+            if (res.status === 401) { logout(); return; }
+            return res.json();
         }
 
-        async function apiFetch(url, options = {}) {
-            const res = await fetch(url, { ...options, headers: getHeaders() });
-            if (!res.ok) {
-                if (res.status === 403) { alert("⛔ انتهت الجلسة"); logout(); throw new Error("غير مصرح"); }
-                console.warn(res.status);
-            }
-            return res;
-        }
-
-        function doLogin() {
+        async function doLogin() {
             const u = document.getElementById('login-username').value.trim();
             const p = document.getElementById('login-password').value.trim();
-            if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
-                sessionStorage.setItem('waleed_logged_in', 'true');
-                sessionStorage.setItem('auth_token', AUTH_TOKEN);
+            const data = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ username: u, password: p }) });
+            if (data?.success) {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
-                initPanel();
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
+                loadScripts();
+            } else document.getElementById('login-error').classList.remove('hidden');
         }
 
-        function logout() {
-            sessionStorage.removeItem('waleed_logged_in');
-            sessionStorage.removeItem('auth_token');
-            location.reload();
+        function logout() { fetch('/api/auth/logout', { method: 'POST' }).then(() => location.reload()); }
+
+        async function createScript() {
+            const body = {
+                name: document.getElementById('script-name').value.trim(),
+                luaContent: document.getElementById('lua-content').value.trim(),
+                targetUsername: document.getElementById('target-username').value.trim() || null,
+                kickMessage: document.getElementById('kick-message').value.trim() || 'تم طردك من السكربت',
+                expiryDuration: document.getElementById('expiry-duration').value.trim() || null
+            };
+            if (!body.name || !body.luaContent) return alert('املأ الحقول!');
+            await api('/api/scripts', { method: 'POST', body: JSON.stringify(body) });
+            loadScripts();
+            ['script-name', 'target-username', 'kick-message', 'expiry-duration', 'lua-content'].forEach(id => document.getElementById(id).value = '');
         }
 
-        if (sessionStorage.getItem('waleed_logged_in') === 'true') {
-            if (!sessionStorage.getItem('auth_token')) sessionStorage.setItem('auth_token', AUTH_TOKEN);
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('admin-panel').classList.remove('hidden');
-            initPanel();
-        }
-
-        function closeResultBox() { document.getElementById('result-box').classList.add('hidden'); }
-        function closeAiBox() { document.getElementById('ai-result-box').classList.add('hidden'); }
-        async function refreshKeys() { await loadMyKeys(); }
-
-        async function uploadScript(overrideSource = null, overrideId = null) {
-            const id = overrideId || document.getElementById('script-id').value.trim();
-            let source = overrideSource || document.getElementById('source-code').value.trim();
-            const type = document.querySelector('input[name="script-type"]:checked').value;
-            if (!id || !source) return alert("املأ الحقول!");
-            const res = await apiFetch(`${SERVER_URL}/api/upload`, {
-                method: 'POST', body: JSON.stringify({ id, source, type })
-            });
-            const data = await res.json();
-            if (data.success) {
-                let ls = `loadstring(game:HttpGet("${SERVER_URL}/load/${id}.lua"))()`;
-                if (type === 'paid') ls = `_G.Key = "مفتاحك"\n` + ls;
-                document.getElementById('final-link-input').value = ls;
-                document.getElementById('result-box').classList.remove('hidden');
-                loadMyScripts(); loadMyKeys();
-                alert("✅ تم الحفظ بنجاح!");
-            } else alert("❌ " + data.message);
-        }
-
-        async function uploadWithKeySystem() {
-            const id = document.getElementById('script-id').value.trim();
-            const source = document.getElementById('source-code').value.trim();
-            if (!id || !source) return alert("املأ الحقول!");
-            document.querySelector('input[name="script-type"][value="paid"]').checked = true;
-            await uploadScript(source, id);
-        }
-
-        // ========== كود ربط السيرفر (بدون KVN) ==========
-        async function injectServerBinding() {
-            const id = document.getElementById('script-id').value.trim();
-            let source = document.getElementById('source-code').value.trim();
-            if (!id || !source) return alert("اكتب اسم الملف وضع الكود!");
-            const code = `-- Waleed Hub Server Binding
-local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-local HttpService = game:GetService("HttpService")
-local SERVER_URL = "${SERVER_URL}"
-local SCRIPT_ID = "${id}"
-local localPlayer = Players.LocalPlayer
-
-local function checkStatus()
-    local s, r = pcall(function() return game:HttpGet(SERVER_URL .. "/api/script-status/" .. SCRIPT_ID) end)
-    if not s then return false, "فشل الاتصال" end
-    local d = HttpService:JSONDecode(r)
-    return d.active, d.message or "⛔ متوقف"
-end
-
-local ok, msg = checkStatus()
-if not ok then
-    StarterGui:SetCore("SendNotification", { Title = "Waleed Hub", Text = msg, Duration = 5 })
-    wait(1)
-    localPlayer:Kick(msg)
-    return
-end
-
-spawn(function()
-    while true do wait(10)
-        local still, m = checkStatus()
-        if not still then
-            StarterGui:SetCore("SendNotification", { Title = "Waleed Hub", Text = m, Duration = 5 })
-            wait(1)
-            localPlayer:Kick(m)
-            break
-        end
-    end
-end)
-
-` + source;
-            currentAiCode = code;
-            currentAiScriptId = id;
-            document.getElementById('ai-code-output').value = code;
-            document.getElementById('ai-result-box').classList.remove('hidden');
-            alert("✅ تم ربط السكريبت بالسيرفر!");
-        }
-
-        function uploadAiCode() {
-            if (!currentAiCode) return alert("لا يوجد كود");
-            document.querySelector('input[name="script-type"][value="paid"]').checked = true;
-            uploadScript(currentAiCode, currentAiScriptId);
-            document.getElementById('ai-result-box').classList.add('hidden');
-        }
-
-        function copyGeneratedCode() {
-            const ta = document.getElementById('final-link-input');
-            ta.select(); document.execCommand('copy'); alert('✅ تم النسخ!');
-        }
-        function copyAiCode() {
-            const ta = document.getElementById('ai-code-output');
-            ta.select(); document.execCommand('copy'); alert('✅ تم النسخ!');
-        }
-        function copyKey() {
-            const txt = document.getElementById('generated-key-text').innerText;
-            navigator.clipboard.writeText(txt); alert('✅ تم النسخ!');
-        }
-
-        async function loadMyScripts() {
-            try {
-                const res = await apiFetch(`${SERVER_URL}/api/list`, { method: 'POST' });
-                const scripts = await res.json();
-                const container = document.getElementById('files-list');
-                const selectDD = document.getElementById('key-script-select');
-                container.innerHTML = ""; selectDD.innerHTML = "<option value=''>-- اختر --</option>";
-                for (let id in scripts) {
-                    const sc = scripts[id];
-                    if (sc.type === 'paid') {
-                        let opt = document.createElement('option'); opt.value = id; opt.innerText = id;
-                        selectDD.appendChild(opt);
-                    }
-                    container.innerHTML += `
-                    <div class="p-3 bg-[#1a0a14]/50 rounded-xl border border-pink-700/30">
-                        <div class="flex justify-between">
-                            <span class="font-mono text-xs">${id}.lua</span>
-                            <span class="text-[10px] ${sc.active ? 'text-green-400' : 'text-red-400'}">${sc.active ? 'شغال' : 'طافي'}</span>
-                        </div>
-                        <div class="grid grid-cols-4 gap-1 mt-2">
-                            <button onclick="toggleScript('${id}', true)" class="bg-green-600 text-[9px] p-1 rounded">تشغيل</button>
-                            <button onclick="toggleScript('${id}', false)" class="bg-amber-600 text-[9px] p-1 rounded">إيقاف</button>
-                            <button onclick="showLink('${id}','${sc.type}')" class="bg-indigo-600 text-[9px] p-1 rounded">رابط</button>
-                            <button onclick="deleteScript('${id}')" class="bg-red-600 text-[9px] p-1 rounded">🗑️</button>
-                        </div>
-                    </div>`;
-                }
-            } catch (e) { console.error(e); }
+        async function loadScripts() {
+            const scripts = await api('/api/scripts');
+            const container = document.getElementById('scripts-list');
+            container.innerHTML = (scripts || []).map(s => `
+                <div class="p-3 bg-[#1a0a14]/50 rounded-xl border border-pink-700/30">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold">${s.name}</span>
+                        <span class="text-xs ${s.enabled ? 'text-green-400' : 'text-red-400'}">${s.enabled ? 'شغال' : 'طافي'}</span>
+                    </div>
+                    ${s.targetUsername ? `<p class="text-[10px] text-pink-400">🎯 ${s.targetUsername}</p>` : ''}
+                    <div class="grid grid-cols-3 gap-1 mt-2">
+                        <button onclick="toggleScript(${s.id}, ${!s.enabled})" class="bg-green-600 text-[10px] p-1 rounded">تشغيل/إيقاف</button>
+                        <button onclick="getLoadstring(${s.id})" class="bg-indigo-600 text-[10px] p-1 rounded">رابط</button>
+                        <button onclick="deleteScript(${s.id})" class="bg-red-600 text-[10px] p-1 rounded">🗑️</button>
+                    </div>
+                </div>`).join('');
         }
 
         async function toggleScript(id, status) {
-            await apiFetch(`${SERVER_URL}/api/toggle`, { method: 'POST', body: JSON.stringify({ id, active: status }) });
-            loadMyScripts();
+            await api(`/api/scripts/${id}`, { method: 'PATCH', body: JSON.stringify({ enabled: status }) });
+            loadScripts();
         }
+
         async function deleteScript(id) {
-            if (confirm(`حذف السكريبت ${id}؟`)) {
-                await apiFetch(`${SERVER_URL}/api/delete-script`, { method: 'POST', body: JSON.stringify({ id }) });
-                loadMyScripts(); loadMyKeys();
-            }
-        }
-        function showLink(id, type) {
-            let ls = `loadstring(game:HttpGet("${SERVER_URL}/load/${id}.lua"))()`;
-            if (type === 'paid') ls = `_G.Key = "مفتاحك"\n` + ls;
-            document.getElementById('final-link-input').value = ls;
-            document.getElementById('result-box').classList.remove('hidden');
+            if (confirm('حذف السكربت؟')) { await api(`/api/scripts/${id}`, { method: 'DELETE' }); loadScripts(); }
         }
 
-        // ========== إنشاء مفتاح مع إمكانية تخصيص اسم روبلوكس ==========
-        async function generateKey() {
-            const scriptId = document.getElementById('key-script-select').value;
-            const duration = document.getElementById('key-duration').value.trim();
-            const allowedUser = document.getElementById('key-allowed-user').value.trim();
-            if (!scriptId) return alert("اختر سكريبت!");
-            const res = await apiFetch(`${SERVER_URL}/api/keys/generate`, {
-                method: 'POST',
-                body: JSON.stringify({ scriptId, duration, allowedUsername: allowedUser || null })
-            });
-            const data = await res.json();
-            if (data.success) {
-                document.getElementById('generated-key-text').innerText = data.key;
-                document.getElementById('generated-key-box').classList.remove('hidden');
-                loadMyKeys();
-            } else alert("❌ " + data.message);
-        }
-
-        async function loadMyKeys() {
-            try {
-                const res = await apiFetch(`${SERVER_URL}/api/keys/list`, { method: 'POST' });
-                allKeysData = await res.json();
-                filterKeys();
-            } catch (e) { console.error(e); }
-        }
-
-        function filterKeys() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const filterType = document.getElementById('search-filter').value;
-            let filtered = [...allKeysData];
-            if (searchTerm) {
-                filtered = filtered.filter(k => {
-                    if (filterType === 'key') return k.key.toLowerCase().includes(searchTerm);
-                    if (filterType === 'script') return k.scriptId.toLowerCase().includes(searchTerm);
-                    if (filterType === 'username') return (k.activatedUsername || '').toLowerCase().includes(searchTerm) || (k.allowedUsername || '').toLowerCase().includes(searchTerm);
-                    return k.key.toLowerCase().includes(searchTerm) || k.scriptId.toLowerCase().includes(searchTerm);
-                });
-            }
-            const tbody = document.getElementById('keys-list-tbody');
-            tbody.innerHTML = '';
-            filtered.forEach(k => {
-                const isExpired = k.isExpired;
-                const rowClass = isExpired ? 'expired' : 'active-key';
-                tbody.innerHTML += `
-                <tr class="${rowClass} key-row">
-                    <td class="py-2 font-mono text-yellow-400 text-[11px]">${k.key}</td>
-                    <td class="py-2 text-xs">${k.scriptId}.lua</td>
-                    <td class="py-2">${k.duration || 'غير محدد'}</td>
-                    <td class="py-2 text-pink-300 font-bold">${k.allowedUsername || '⭕ غير محدد'}</td>
-                    <td class="py-2">${k.activatedUsername || '⚪'}</td>
-                    <td class="py-2 text-center">
-                        <button onclick="resetKeyHWID('${k.key}')" class="bg-teal-600/30 hover:bg-teal-600 px-2 py-1 rounded text-[10px]">🔄</button>
-                        <button onclick="deleteKey('${k.key}')" class="bg-red-600/30 hover:bg-red-600 px-2 py-1 rounded text-[10px]">🗑️</button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        async function resetKeyHWID(key) {
-            await apiFetch(`${SERVER_URL}/api/keys/reset`, { method: 'POST', body: JSON.stringify({ key }) });
-            loadMyKeys();
-        }
-        async function deleteKey(key) {
-            if (confirm(`حذف المفتاح ${key}؟`)) {
-                await apiFetch(`${SERVER_URL}/api/keys/delete`, { method: 'POST', body: JSON.stringify({ key }) });
-                loadMyKeys();
+        async function getLoadstring(id) {
+            const data = await api(`/api/scripts/${id}/loadstring`);
+            if (data) {
+                await navigator.clipboard.writeText(data.loadstring);
+                alert('✅ تم نسخ الـ Loadstring!');
             }
         }
 
-        function initPanel() {
-            loadMyScripts();
-            loadMyKeys();
-            document.getElementById('search-input').addEventListener('input', filterKeys);
-            document.getElementById('search-filter').addEventListener('change', filterKeys);
-            setInterval(() => loadMyKeys(), 5000);
-        }
+        (async () => {
+            const me = await api('/api/auth/me');
+            if (me?.loggedIn) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadScripts();
+            }
+        })();
     </script>
 </body>
 </html>
