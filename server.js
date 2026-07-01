@@ -1,117 +1,177 @@
 const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
+const sqlite3 = require('sqlite3').verbose();
+const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const path = require('path');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-app.use(express.json({ limit: '50mb' }));
-app.use(cors());
+// قاعدة البيانات
+const db = new sqlite3.Database('./waliy_hub.db');
 
-const SCRIPTS_FILE = path.join(__dirname, 'scripts.json');
-const KEYS_FILE = path.join(__dirname, 'keys.json');
-
-if (!fs.existsSync(SCRIPTS_FILE)) fs.writeFileSync(SCRIPTS_FILE, JSON.stringify({}));
-if (!fs.existsSync(KEYS_FILE)) fs.writeFileSync(KEYS_FILE, JSON.stringify([]));
-
-function readScripts() { return JSON.parse(fs.readFileSync(SCRIPTS_FILE, 'utf8')); }
-function writeScripts(data) { fs.writeFileSync(SCRIPTS_FILE, JSON.stringify(data, null, 2)); }
-function readKeys() { return JSON.parse(fs.readFileSync(KEYS_FILE, 'utf8')); }
-function writeKeys(data) { fs.writeFileSync(KEYS_FILE, JSON.stringify(data, null, 2)); }
-
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-
-app.get('/load/:id.lua', (req, res) => {
-    const scripts = readScripts();
-    if (scripts[req.params.id]) {
-        res.type('text/plain');
-        res.send(scripts[req.params.id].source);
-    } else res.status(404).send('-- not found');
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS scripts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        accountName TEXT,
+        kickMessage TEXT DEFAULT 'تم طردك من السكربت',
+        luaContent TEXT,
+        targetUsername TEXT,
+        expiryDuration TEXT,
+        enabled INTEGER DEFAULT 1,
+        expiresAt TIMESTAMP,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    db.run(`CREATE TABLE IF NOT EXISTS login_attempts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        ip TEXT,
+        success INTEGER,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    db.run(`CREATE TABLE IF NOT EXISTS script_accesses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        scriptId INTEGER,
+        scriptName TEXT,
+        ip TEXT,
+        blockedReason TEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
 });
 
-app.get('/api/script-status/:id', (req, res) => {
-    res.json({ active: readScripts()[req.params.id]?.active || false });
-});
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    store: new SQLiteStore({ db: 'sessions.db' }),
+    secret: uuidv4(),
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }
+}));
 
-app.post('/api/validate-key', (req, res) => {
-    const { key, username } = req.body;
-    if (!key || !username) return res.json({ valid: false });
-    const keys = readKeys();
-    const k = keys.find(x => x.key === key);
-    if (!k) return res.json({ valid: false });
-    if (k.expiryDate && new Date(k.expiryDate) < new Date()) return res.json({ valid: false });
-    if (k.allowedUsername && k.allowedUsername.toLowerCase() !== username.toLowerCase()) return res.json({ valid: false });
-    if (!k.allowedUsername) {
-        if (k.activatedUsername && k.activatedUsername.toLowerCase() !== username.toLowerCase()) return res.json({ valid: false });
-        if (!k.activatedUsername) { k.activatedUsername = username; writeKeys(keys); }
+const ADMIN_USERNAME = "Waleed";
+const ADMIN_PASSWORD = "kvn2026";
+
+// Middleware
+function requireAuth(req, res, next) {
+    if (!req.session.user) return res.status(401).json({ error: 'يرجى تسجيل الدخول' });
+    next();
+}
+
+function logAccess(scriptId, scriptName, ip, blockedReason = null) {
+    db.run('INSERT INTO script_accesses (scriptId, scriptName, ip, blockedReason) VALUES (?,?,?,?)',
+        [scriptId, scriptName, ip, blockedReason]);
+}
+
+// Auth
+app.post('/api/auth/login', (req, res) => {
+    const { username, password } = req.body;
+    const ip = req.ip;
+    const success = (username === ADMIN_USERNAME && password === ADMIN_PASSWORD);
+    db.run('INSERT INTO login_attempts (username, ip, success) VALUES (?,?,?)', [username, ip, success ? 1 : 0]);
+    if (success) {
+        req.session.user = { username };
+        return res.json({ success: true });
     }
-    res.json({ valid: true });
+    res.status(401).json({ success: false, message: 'خطأ في البيانات' });
 });
 
-app.post('/api/list', (req, res) => res.json(readScripts()));
-app.post('/api/upload', (req, res) => {
-    const { id, source, type } = req.body;
-    if (!id || !source) return res.json({ success: false });
-    const scripts = readScripts();
-    scripts[id] = { source, type: type || 'free', active: true };
-    writeScripts(scripts);
-    res.json({ success: true });
+app.post('/api/auth/logout', (req, res) => { req.session.destroy(); res.json({ success: true }); });
+app.get('/api/auth/me', (req, res) => res.json({ loggedIn: !!req.session.user, username: req.session.user?.username }));
+
+// Scripts CRUD
+app.get('/api/scripts', requireAuth, (req, res) => {
+    db.all('SELECT * FROM scripts ORDER BY createdAt DESC', (err, rows) => res.json(rows || []));
 });
-app.post('/api/toggle', (req, res) => {
-    const { id, active } = req.body;
-    const scripts = readScripts();
-    if (scripts[id]) { scripts[id].active = active; writeScripts(scripts); res.json({ success: true }); }
-    else res.json({ success: false });
+
+app.post('/api/scripts', requireAuth, (req, res) => {
+    const { name, luaContent, targetUsername, expiryDuration, kickMessage } = req.body;
+    const accountName = req.session.user.username;
+    db.run('INSERT INTO scripts (name, accountName, luaContent, targetUsername, expiryDuration, kickMessage) VALUES (?,?,?,?,?,?)',
+        [name, accountName, luaContent, targetUsername || null, expiryDuration || null, kickMessage || 'تم طردك من السكربت'],
+        function() { res.json({ success: true, id: this.lastID }); });
 });
-app.post('/api/delete-script', (req, res) => {
-    const { id } = req.body;
-    const scripts = readScripts();
-    if (scripts[id]) {
-        delete scripts[id];
-        writeScripts(scripts);
-        writeKeys(readKeys().filter(k => k.scriptId !== id));
-        res.json({ success: true });
-    } else res.json({ success: false });
+
+app.put('/api/scripts/:id', requireAuth, (req, res) => {
+    const { name, luaContent, targetUsername, expiryDuration, kickMessage } = req.body;
+    db.run('UPDATE scripts SET name=?, luaContent=?, targetUsername=?, expiryDuration=?, kickMessage=?, updatedAt=CURRENT_TIMESTAMP WHERE id=?',
+        [name, luaContent, targetUsername, expiryDuration, kickMessage, req.params.id],
+        () => res.json({ success: true }));
 });
-app.post('/api/keys/list', (req, res) => {
-    const keys = readKeys();
-    const now = new Date();
-    res.json(keys.map(k => ({ ...k, isExpired: k.expiryDate ? new Date(k.expiryDate) < now : false })));
+
+app.delete('/api/scripts/:id', requireAuth, (req, res) => {
+    db.run('DELETE FROM scripts WHERE id=?', [req.params.id], () => res.json({ success: true }));
 });
-app.post('/api/keys/generate', (req, res) => {
-    const { scriptId, duration, allowedUsername } = req.body;
-    if (!scriptId) return res.json({ success: false });
-    const key = 'WALEED-' + Math.random().toString(36).substring(2,8).toUpperCase() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
-    let expiryDate = null;
-    if (duration) {
-        const m = duration.match(/(\d+)\s*(min|h|d|m|y)/i);
-        if (m) {
-            const now = new Date();
-            const n = parseInt(m[1]);
-            const u = m[2];
-            if (u === 'min') now.setMinutes(now.getMinutes()+n);
-            if (u === 'h') now.setHours(now.getHours()+n);
-            if (u === 'd') now.setDate(now.getDate()+n);
-            if (u === 'm') now.setMonth(now.getMonth()+n);
-            if (u === 'y') now.setFullYear(now.getFullYear()+n);
-            expiryDate = now.toISOString();
+
+app.patch('/api/scripts/:id', requireAuth, (req, res) => {
+    const { enabled } = req.body;
+    db.run('UPDATE scripts SET enabled=?, updatedAt=CURRENT_TIMESTAMP WHERE id=?', [enabled ? 1 : 0, req.params.id], () => res.json({ success: true }));
+});
+
+// Loadstring
+app.get('/api/scripts/:id/loadstring', requireAuth, (req, res) => {
+    db.get('SELECT * FROM scripts WHERE id=?', [req.params.id], (err, script) => {
+        if (!script) return res.status(404).json({ error: 'غير موجود' });
+        const loadstring = `loadstring(game:HttpGet("${req.protocol}://${req.get('host')}/api/raw/${script.id}"))()`;
+        res.json({ loadstring, encrypted: `-- تشفير Moonveil سيكون هنا\n${loadstring}` });
+    });
+});
+
+// Polling check
+app.get('/api/scripts/check/:id', (req, res) => {
+    db.get('SELECT enabled FROM scripts WHERE id=?', [req.params.id], (err, script) => {
+        res.json({ enabled: script?.enabled === 1 });
+    });
+});
+
+// Raw Lua (Roblox only)
+app.get('/api/raw/:id', (req, res) => {
+    const ua = req.get('User-Agent') || '';
+    if (!ua.includes('Roblox')) return res.redirect('/');
+    db.get('SELECT * FROM scripts WHERE id=?', [req.params.id], (err, script) => {
+        if (!script || !script.enabled) return res.status(404).send('-- سكربت غير موجود أو معطل');
+        
+        const ip = req.ip;
+        logAccess(script.id, script.name, ip);
+
+        let lua = '';
+        // فحص اليوزرنيم
+        if (script.targetUsername) {
+            lua += `local _waliy_player = game:GetService("Players").LocalPlayer
+if _waliy_player.Name ~= "${script.targetUsername}" then
+    _waliy_player:Kick("${script.kickMessage}")
+    return
+end\n`;
         }
-    }
-    const keys = readKeys();
-    keys.push({ key, scriptId, duration: duration || 'غير محدد', expiryDate, activatedUsername: null, allowedUsername: allowedUsername || null });
-    writeKeys(keys);
-    res.json({ success: true, key, expiryDate });
-});
-app.post('/api/keys/reset', (req, res) => {
-    const keys = readKeys();
-    const i = keys.findIndex(k => k.key === req.body.key);
-    if (i !== -1) { keys[i].activatedUsername = null; writeKeys(keys); res.json({ success: true }); }
-    else res.json({ success: false });
-});
-app.post('/api/keys/delete', (req, res) => {
-    writeKeys(readKeys().filter(k => k.key !== req.body.key));
-    res.json({ success: true });
+        // نظام polling
+        lua += `local _waliy_checkUrl = "${req.protocol}://${req.get('host')}/api/scripts/check/${script.id}"
+local _waliy_kickMsg = "${script.kickMessage}"
+task.spawn(function()
+    while true do
+        local _waliy_success, _waliy_res = pcall(function()
+            return game:HttpGet(_waliy_checkUrl)
+        end)
+        if _waliy_success and _waliy_res then
+            local _waliy_data = game:GetService("HttpService"):JSONDecode(_waliy_res)
+            if not _waliy_data.enabled then
+                game:GetService("Players").LocalPlayer:Kick(_waliy_kickMsg)
+            end
+        end
+        task.wait(5)
+    end
+end)\n`;
+        // كود اللاعب
+        lua += script.luaContent;
+        res.set('Content-Type', 'text/plain').send(lua);
+    });
 });
 
-app.listen(PORT, () => console.log('Waleed Hub running'));
+// Logs
+app.get('/api/logs/logins', requireAuth, (req, res) => db.all('SELECT * FROM login_attempts ORDER BY createdAt DESC', (e, r) => res.json(r)));
+app.get('/api/logs/accesses', requireAuth, (req, res) => db.all('SELECT * FROM script_accesses ORDER BY createdAt DESC', (e, r) => res.json(r)));
+app.get('/api/logs/accesses/:scriptId', requireAuth, (req, res) => db.all('SELECT * FROM script_accesses WHERE scriptId=? ORDER BY createdAt DESC', [req.params.scriptId], (e, r) => res.json(r)));
+
+app.listen(PORT, () => console.log(`Waliy Hub running on port ${PORT}`));
